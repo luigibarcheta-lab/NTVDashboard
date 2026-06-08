@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTV Pipeline Dashboard 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{--bg:#f5f4f0;--s:#fff;--s2:#f0efe9;--b:rgba(0,0,0,.10);--b2:rgba(0,0,0,.18);--t:#1a1a18;--t2:#5f5e5a;--t3:#9a9890;--ac:#1a56a0;--r:10px;--rs:6px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);font-size:14px;line-height:1.5;}
+  .hdr{background:var(--s);border-bottom:1px solid var(--b);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px;}
+  .hdr h1{font-size:16px;font-weight:600;letter-spacing:-.02em;}
+  .hdr p{font-size:11px;color:var(--t3);margin-top:2px;}
+  .nav{display:flex;gap:6px;flex-wrap:wrap;}
+  .nb{font-size:12px;padding:6px 14px;border-radius:20px;border:1px solid var(--b2);background:transparent;color:var(--t2);cursor:pointer;font-weight:500;transition:all .12s;}
+  .nb:hover{background:var(--s2);}
+  .nb.on{background:var(--ac);color:#fff;border-color:var(--ac);}
+  .pg{display:none;padding:24px 28px;max-width:1200px;margin:0 auto;}
+  .pg.on{display:block;}
+  .sec{font-size:11px;font-weight:600;letter-spacing:.07em;color:var(--t3);text-transform:uppercase;margin-bottom:14px;}
+  .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:22px;}
+  .mc{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:14px 16px;}
+  .mc.hl{border-left:3px solid var(--ac);}
+  .ml{font-size:11px;color:var(--t3);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;}
+  .mv{font-size:24px;font-weight:600;color:var(--t);letter-spacing:-.03em;line-height:1.1;}
+  .ms{font-size:11px;color:var(--t3);margin-top:3px;}
+  .cr{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+  .cc{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;}
+  .cc.full{grid-column:1/-1;}
+  .ct{font-size:13px;font-weight:600;color:var(--t);margin-bottom:12px;}
+  .leg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .li{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2);}
+  .ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+  .tc{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;margin-bottom:22px;overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{font-size:10px;font-weight:600;color:var(--t3);text-align:left;padding:5px 9px 9px;border-bottom:1px solid var(--b);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;}
+  td{padding:6px 9px;border-bottom:1px solid var(--b);color:var(--t);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--s2);}
+  .nr{text-align:right;font-variant-numeric:tabular-nums;}
+  .tt td{font-weight:600;background:var(--s2)!important;}
+  .badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+  .bn{background:#dbeafe;color:#1e40af;} .bw{background:#dcfce7;color:#166534;}
+  .bh{background:#fef3c7;color:#92400e;} .bp{background:#ede9fe;color:#5b21b6;}
+  .bl{background:#fee2e2;color:#991b1b;} .bg{background:#f3f4f6;color:#374151;}
+  .bc{background:#f3f4f6;color:#6b7280;} .bx{background:#f3f4f6;color:#9ca3af;}
+  .blui{background:#d1fae5;color:#065f46;} .bandy{background:#fef3c7;color:#92400e;}
+  .bedi{background:#dbeafe;color:#1e40af;} .bmarj{background:#fce7f3;color:#9d174d;} .buna{background:#f3f4f6;color:#6b7280;}
+  .buc{background:#dbeafe;color:#1e40af;} .bgo{background:#d1fae5;color:#065f46;} .bsb{background:#ede9fe;color:#5b21b6;}
+  .sf{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+  .sf input{flex:1;min-width:180px;font-size:12px;padding:7px 11px;border:1px solid var(--b2);border-radius:var(--rs);background:var(--s);color:var(--t);outline:none;}
+  .sf input:focus{border-color:var(--ac);}
+  .fr{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+  .fb{font-size:11px;padding:4px 11px;border-radius:20px;border:1px solid var(--b2);cursor:pointer;background:var(--s);color:var(--t2);font-weight:500;transition:all .12s;}
+  .fb:hover{background:var(--s2);}
+  .fb.on{background:var(--ac);color:#fff;border-color:var(--ac);}
+  .rc{font-size:11px;color:var(--t3);margin-bottom:6px;}
+  .ec{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--rs);padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:16px;}
+  .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--rs);padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:16px;}
+  .note{font-size:11px;color:var(--t3);margin-top:10px;line-height:1.6;}
+  footer{text-align:center;padding:20px;font-size:11px;color:var(--t3);border-top:1px solid var(--b);margin-top:32px;}
+  @media(max-width:680px){.hdr{padding:12px 14px;}.pg{padding:14px;}.cr{grid-template-columns:1fr;}.mg{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>NTV Pipeline Dashboard &mdash; 2026</h1>
+    <p>Infrastructure &bull; UCCaaS &bull; GOCCC &bull; SBCaaS &bull; Passthrough deduplicated against Conso by SFA ID</p>
+  </div>
+  <div class="nav">
+    <button class="nb on" onclick="go('combined',this)">Combined View</button>
+    <button class="nb" onclick="go('conso',this)">Conso (194)</button>
+    <button class="nb" onclick="go('passthrough',this)">Passthrough (74)</button>
+  </div>
+</div>
+
+<!-- COMBINED -->
+<div class="pg on" id="pg-combined">
+  <p class="sec">Combined pipeline &mdash; 194 Conso (unchanged) + 74 Passthrough (40 cross-tab dupes removed)</p>
+  <div class="mg">
+    <div class="mc hl"><div class="ml">Total opportunities</div><div class="mv">268</div><div class="ms">194 Conso &bull; 74 Passthrough</div></div>
+    <div class="mc"><div class="ml">Total TCV</div><div class="mv">&#8369;351.9M</div><div class="ms">Conso &#8369;319.7M &bull; Pass &#8369;32.3M</div></div>
+    <div class="mc"><div class="ml">In-year revenue</div><div class="mv">&#8369;151.8M</div><div class="ms">Conso &#8369;149.5M &bull; Pass &#8369;2.4M</div></div>
+    <div class="mc"><div class="ml">Deal MRC</div><div class="mv">&#8369;16.9M</div><div class="ms">Monthly recurring</div></div>
+    <div class="mc hl"><div class="ml">Active pipeline</div><div class="mv">93</div><div class="ms">Nego + Hold + Parked</div></div>
+    <div class="mc"><div class="ml">Active TCV</div><div class="mv">&#8369;166.7M</div><div class="ms">In-year &#8369;73.9M</div></div>
+    <div class="mc"><div class="ml">Wins (Conso)</div><div class="mv">26</div><div class="ms">Closed won</div></div>
+    <div class="mc"><div class="ml">Removed from Pass</div><div class="mv">40</div><div class="ms">SFA IDs found in Conso</div></div>
+  </div>
+  <div class="cr">
+    <div class="cc">
+      <div class="ct">Opportunity status &mdash; Conso</div>
+      <div class="leg">
+        <div class="li"><span class="ld" style="background:#378ADD"></span>Nego (64)</div>
+        <div class="li"><span class="ld" style="background:#639922"></span>Win (26)</div>
+        <div class="li"><span class="ld" style="background:#EF9F27"></span>Hold (20)</div>
+        <div class="li"><span class="ld" style="background:#E24B4A"></span>Lost (7)</div>
+        <div class="li"><span class="ld" style="background:#7F77DD"></span>Parked (9)</div>
+        <div class="li"><span class="ld" style="background:#888780"></span>No Go (6)</div>
+        <div class="li"><span class="ld" style="background:#B4B2A9"></span>Cancelled (3)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="c1"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Product distribution &mdash; combined</div>
+      <div class="leg">
+        <div class="li"><span class="ld" style="background:#378ADD"></span>UCCaaS (202)</div>
+        <div class="li"><span class="ld" style="background:#1D9E75"></span>GOCCC (63)</div>
+        <div class="li"><span class="ld" style="background:#7F77DD"></span>SBCaaS (3)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="c2"></canvas></div>
+    </div>
+  </div>
+  <div class="cc full" style="margin-bottom:22px">
+    <div class="ct">Monthly OTC &mdash; 2026 (&#8369;) &nbsp;<span style="font-size:11px;font-weight:400;color:var(--t3)">Conso NTV only</span></div>
+    <div style="position:relative;height:200px"><canvas id="c3"></canvas></div>
+  </div>
+  <div class="tc">
+    <div class="ct">BizCon performance &mdash; Conso</div>
+    <table>
+      <thead><tr><th>BizCon</th><th>UCCaaS</th><th>GOCCC</th><th>SBCaaS</th><th class="nr">Total</th><th class="nr">TCV (&#8369;)</th><th class="nr">In-year (&#8369;)</th><th class="nr">MRC (&#8369;)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Lui</strong></td><td>92</td><td>38</td><td>2</td><td class="nr">57</td><td class="nr">226,907,859</td><td class="nr">100,172,477</td><td class="nr">8,354,275</td></tr>
+        <tr><td><strong>Ed</strong></td><td>27</td><td>12</td><td>1</td><td class="nr">40</td><td class="nr">55,456,647</td><td class="nr">36,718,807</td><td class="nr">3,558,080</td></tr>
+        <tr><td><strong>Andy</strong></td><td>17</td><td>12</td><td>0</td><td class="nr">29</td><td class="nr">33,396,794</td><td class="nr">12,238,364</td><td class="nr">2,384,980</td></tr>
+        <tr><td><strong>Marj</strong></td><td>10</td><td>0</td><td>0</td><td class="nr">10</td><td class="nr">3,900,724</td><td class="nr">346,890</td><td class="nr">240,830</td></tr>
+        <tr class="tt"><td>Total</td><td>137</td><td>54</td><td>3</td><td class="nr">194</td><td class="nr">319,662,024</td><td class="nr">149,476,538</td><td class="nr">14,538,165</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tc">
+    <div class="ct">Product &times; status matrix &mdash; Conso</div>
+    <table>
+      <thead><tr><th>Product</th><th>Nego</th><th>Win</th><th>Hold</th><th>Parked</th><th>Lost</th><th>No Go</th><th>Cancelled</th><th class="nr">Total</th><th class="nr">TCV (&#8369;)</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge buc">UCCaaS</span></td><td>42</td><td>17</td><td>19</td><td>8</td><td>3</td><td>5</td><td>2</td><td class="nr">96+</td><td class="nr">89.3M</td></tr>
+        <tr><td><span class="badge bgo">GOCCC</span></td><td>20</td><td>9</td><td>1</td><td>1</td><td>4</td><td>1</td><td>1</td><td class="nr">37+</td><td class="nr">221.1M</td></tr>
+        <tr><td><span class="badge bsb">SBCaaS</span></td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="nr">3</td><td class="nr">5.7M</td></tr>
+        <tr class="tt"><td>Total</td><td>64</td><td>26</td><td>20</td><td>9</td><td>7</td><td>6</td><td>3</td><td class="nr">135+</td><td class="nr">316.1M</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CONSO -->
+<div class="pg" id="pg-conso">
+  <p class="sec">Conso &mdash; all 194 NTV records (no changes made)</p>
+  <div class="info">&#9432; Conso records are displayed as-is from the source file. No deduplication applied.</div>
+  <div class="mg">
+    <div class="mc hl"><div class="ml">Total records</div><div class="mv">194</div><div class="ms">137 UCCaaS &bull; 54 GOCCC &bull; 3 SBCaaS</div></div>
+    <div class="mc"><div class="ml">Total TCV</div><div class="mv">&#8369;319.7M</div><div class="ms">GOCCC leads at &#8369;221M</div></div>
+    <div class="mc"><div class="ml">In-year revenue</div><div class="mv">&#8369;149.5M</div><div class="ms">Active &#8369;73.9M</div></div>
+    <div class="mc"><div class="ml">MRC</div><div class="mv">&#8369;14.5M</div><div class="ms">Monthly recurring</div></div>
+    <div class="mc"><div class="ml">Nego</div><div class="mv">64</div><div class="ms">With proposal</div></div>
+    <div class="mc"><div class="ml">Win</div><div class="mv">26</div><div class="ms">Closed won</div></div>
+    <div class="mc"><div class="ml">Hold</div><div class="mv">20</div><div class="ms">Stalled</div></div>
+    <div class="mc"><div class="ml">Lost / No Go / Cancelled</div><div class="mv">16</div><div class="ms">Closed unfavorably</div></div>
+  </div>
+  <div class="tc">
+    <div class="ct">All Conso NTV opportunities &mdash; 194 records</div>
+    <div class="sf"><input type="text" id="cs" placeholder="Search client, AM, BizCon, SFA ID&hellip;" oninput="fC()"></div>
+    <div class="fr">
+      <button class="fb on" onclick="sC('ALL',this)">All (194)</button>
+      <button class="fb" onclick="sC('UCCaaS',this)">UCCaaS (137)</button>
+      <button class="fb" onclick="sC('GOCCC',this)">GOCCC (54)</button>
+      <button class="fb" onclick="sC('SBCaaS',this)">SBCaaS (3)</button>
+      <button class="fb" onclick="sC('Nego (with Proposal)',this)">Nego</button>
+      <button class="fb" onclick="sC('Win',this)">Win</button>
+      <button class="fb" onclick="sC('Hold',this)">Hold</button>
+      <button class="fb" onclick="sC('Parked',this)">Parked</button>
+      <button class="fb" onclick="sC('HAS_TCV',this)">Has TCV</button>
+    </div>
+    <div class="rc" id="crc">Showing 194 records</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>#</th><th>Client</th><th>Product</th><th>BizCon</th><th>Account Manager</th><th>Squad</th><th>Tribe</th><th>Status</th><th>SFA ID</th><th class="nr">TCV (&#8369;)</th><th class="nr">In-year (&#8369;)</th><th class="nr">MRC (&#8369;)</th></tr></thead>
+        <tbody id="ctb"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PASSTHROUGH -->
+<div class="pg" id="pg-passthrough">
+  <p class="sec">Passthrough &mdash; 74 records remaining (40 removed — SFA IDs found in Conso)</p>
+  <div class="info">&#9432; Only Passthrough entries whose SFA ID matched a Conso SFA ID were removed (40 records). All other Passthrough records kept as-is.</div>
+  <div class="warn">&#9888; All records have missing assigned/scoping dates. Monthly OTC data unavailable. Some records show &#8369;0 TCV (budgetary / SFA pending).</div>
+  <div class="mg">
+    <div class="mc hl"><div class="ml">Remaining records</div><div class="mv">74</div><div class="ms">65 UCCaaS &bull; 9 GOCCC</div></div>
+    <div class="mc"><div class="ml">Total TCV</div><div class="mv">&#8369;32.3M</div><div class="ms">Lui &#8369;15.4M leads</div></div>
+    <div class="mc"><div class="ml">In-year revenue</div><div class="mv">&#8369;2.36M</div><div class="ms">Monthly recurring</div></div>
+    <div class="mc"><div class="ml">MRC</div><div class="mv">&#8369;2.36M</div><div class="ms">Monthly recurring</div></div>
+    <div class="mc"><div class="ml">Removed</div><div class="mv">40</div><div class="ms">Cross-tab SFA ID matches</div></div>
+    <div class="mc"><div class="ml">Unassigned BizCon</div><div class="mv">63</div><div class="ms">Need tagging</div></div>
+    <div class="mc"><div class="ml">Edison</div><div class="mv">6</div><div class="ms">TCV &#8369;3.9M</div></div>
+    <div class="mc"><div class="ml">Lui</div><div class="mv">4</div><div class="ms">TCV &#8369;15.4M</div></div>
+  </div>
+  <div class="cr">
+    <div class="cc">
+      <div class="ct">BizCon assignment</div>
+      <div class="leg">
+        <div class="li"><span class="ld" style="background:#888780"></span>Unassigned (63)</div>
+        <div class="li"><span class="ld" style="background:#378ADD"></span>Edison (6)</div>
+        <div class="li"><span class="ld" style="background:#1D9E75"></span>Lui (4)</div>
+        <div class="li"><span class="ld" style="background:#EF9F27"></span>Andy (1)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p1"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">TCV by BizCon (&#8369;)</div>
+      <div style="position:relative;height:200px"><canvas id="p2"></canvas></div>
+    </div>
+  </div>
+  <div class="tc">
+    <div class="ct">All Passthrough NTV opportunities &mdash; 74 records</div>
+    <div class="sf"><input type="text" id="ps" placeholder="Search client, AM, squad, product&hellip;" oninput="fP()"></div>
+    <div class="fr">
+      <button class="fb on" onclick="sP('ALL',this)">All (74)</button>
+      <button class="fb" onclick="sP('UCCaaS',this)">UCCaaS (65)</button>
+      <button class="fb" onclick="sP('GOCCC',this)">GOCCC (9)</button>
+      <button class="fb" onclick="sP('Lui',this)">Lui</button>
+      <button class="fb" onclick="sP('Andy',this)">Andy</button>
+      <button class="fb" onclick="sP('Edison',this)">Edison</button>
+      <button class="fb" onclick="sP('Unassigned',this)">Unassigned</button>
+      <button class="fb" onclick="sP('HAS_TCV',this)">Has TCV</button>
+    </div>
+    <div class="rc" id="prc">Showing 74 records</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>#</th><th>Client</th><th>Product</th><th>Account Manager</th><th>Squad</th><th>Tribe</th><th>BizCon Tag</th><th>SFA ID</th><th>Status</th><th class="nr">TCV (&#8369;)</th><th class="nr">MRC (&#8369;)</th></tr></thead>
+        <tbody id="ptb"></tbody>
+      </table>
+    </div>
+    <p class="note">40 records removed from Passthrough — their SFA IDs were found in Conso. All remaining 74 records kept as-is. Records flagged &ldquo;Assigned Date Missing&rdquo; in source.</p>
+  </div>
+</div>
+
+<footer>NTV Pipeline Dashboard 2026 &bull; Infrastructure BD &bull; Rule: Passthrough entries removed only when SFA ID exists in Conso &bull; 268 total opportunities &bull; Data as of last export</footer>
+
+<script>
+function go(id,btn){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));document.getElementById('pg-'+id).classList.add('on');btn.classList.add('on');}
+const gc='rgba(0,0,0,0.06)',tc='#9a9890';
+function donut(id,labels,data,colors){new Chart(document.getElementById(id),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}`}}}}});}
+function hbar(id,labels,data,colors){new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ₱'+Math.round(c.parsed.x).toLocaleString()}}},scales:{x:{ticks:{color:tc,font:{size:10},callback:v=>'₱'+(v/1e6).toFixed(0)+'M'},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{display:false}}}}});}
+donut('c1',['Nego','Win','Hold','Lost','Parked','No Go','Cancelled'],[64,26,20,7,9,6,3],['#378ADD','#639922','#EF9F27','#E24B4A','#7F77DD','#888780','#B4B2A9']);
+donut('c2',['UCCaaS','GOCCC','SBCaaS'],[202,63,3],['#378ADD','#1D9E75','#7F77DD']);
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{data:[0,2196340,3663167,3667030,12179500,2597724,9152186,2214090,4963340,0,0,1029920],backgroundColor:'#1a56a0',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ₱'+Math.round(c.parsed.y).toLocaleString()}}},scales:{x:{ticks:{color:tc,font:{size:11},autoSkip:false},grid:{display:false}},y:{ticks:{color:tc,font:{size:10},callback:v=>'₱'+(v/1e6).toFixed(1)+'M'},grid:{color:gc}}}}});
+donut('p1',['Unassigned','Edison','Lui','Andy'],[63,6,4,1],['#888780','#378ADD','#1D9E75','#EF9F27']);
+hbar('p2',['Lui','Unassigned','Edison','Andy'],[15378352,12501090,3901200,469620],['#1D9E75','#888780','#378ADD','#EF9F27']);
+
+function sB(s){const m={'Nego (with Proposal)':'bn','Win':'bw','Hold':'bh','Parked':'bp','Lost':'bl','No Go':'bg','Cancelled':'bc','WIN':'bw'};return`<span class="badge ${m[s]||'bx'}">${s||'—'}</span>`;}
+function pB(p){return`<span class="badge ${p==='GOCCC'?'bgo':p==='SBCaaS'?'bsb':'buc'}">${p}</span>`;}
+function bB(b){const m={'Lui':'blui','Andy':'bandy','Ed':'bedi','Edison':'bedi','Marj':'bmarj'};return`<span class="badge ${m[b]||'buna'}">${b}</span>`;}
+function fmt(n){return n>0?Number(n).toLocaleString():'<span style="color:#aaa">0</span>';}
+
+const CR=[["\u0069\u0043\u0041\u0052\u0045","GOCCC","Ghiesa Saito","Lui","CGMA 3","CLUSTER 3","Win","OPP0378046",70502872,15477510,0],["AYALA MALLS","UCCaaS","Karl Bantiling","Lui","UNIT 1","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0442763",34221590,4275030,935830],["CAI NIAO","UCCaaS","JOHN ROBERT ANGELES","Lui","Hyperscalers","Hyperscalers","Win","OPP0391557",15670000,13070000,1300000],["TFS (GENESYS RECORDING LOGS)","GOCCC","JOANNA FAYE ACU\u00d1A","Lui","UNIT 7","KEY ACCOUNTS 2","Nego (with Proposal)","OPP0451597",11156000,11156000,0],["SP Madrid","UCCaaS","JONATHAN GUERRERO","Ed","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0491238",8850000,4425000,737500],["AI RUDDER","UCCaaS","JON ALVIN SEBELLO","Lui","CGMA 3","CLUSTER 3","Nego (with Proposal)","OPP0472226",8500000,5000000,700000],["GOTYME (2026 RENEWAL)","GOCCC","Melissa Ann Lopez","Lui","UNIT 7","KEY ACCOUNTS 2","Win","OPP0366204",6658680,6209070,449610],["GOTYME (2025 RENEWAL & MIGRATION)","GOCCC","Melissa Ann Lopez","Lui","UNIT 7","KEY ACCOUNTS 2","Win","OPP0366204",6658680,5759460,449610],["YIHUA","UCCaaS","JASELLE ONGKEKO","Lui","SGMA 1","CLUSTER 3","Nego (with Proposal)","OPP0476852",6626640,1358500,181660],["Wheeltek","GOCCC","SHEILA MARIE GALANG","Ed","NCL 2","CLUSTER 1","Nego (with Proposal)","OPP0475138",5017120,2803120,369000],["iQOR","GOCCC","FRECHIE ANTONY MACARAEG","Lui","OMNI","OMNI","Lost","OPP0476491",4928290,2756110,362030],["IPOPHL","UCCaaS","JOEL ANGELO ESPIRITU","Ed","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Nego (with Proposal)","",4399330,4399330,0],["Department of Trade and Industry (DTI)","UCCaaS","JOEL ANGELO ESPIRITU","Andy","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Win","OPP0436061",4185840,4185840,348820],["Casto Travel Philippines Inc.","GOCCC","JONATHAN GUERRERO","Andy","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0464915",3956900,293760,293760],["DTI","UCCaaS","JOEL ANGELO ESPIRITU","Ed","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Win","OPP0436061",3683534,2148728,306961],["AYALA LAND INC","UCCaaS","Bernard Perillo","Lui","UNIT 1","KEY ACCOUNTS 1","Win","OPP0339796",3545480,1333730,88470],["INLIFE (CCS)","GOCCC","GHIESA SAITO","Lui","CGMA 3","CLUSTER 3","Nego (with Proposal)","OPP0479643",3144580,1821580,189000],["INLIFE (UCCaaS)","UCCaaS","GHIESA SAITO","Lui","CGMA 3","CLUSTER 3","Nego (with Proposal)","OPP0412574",2970120,1322880,235320],["GLOBAL PAYMENTS (SBCaaS)","SBCaaS","ROTESSA ATENDIDO","Lui","UNIT 1","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0493576",2868620,1926560,157010],["BDO","SBCaaS","HAZEL TABIGUE","Lui","UNIT 5","KEY ACCOUNTS 2","Nego (with Proposal)","OPP0494039",2868620,314020,157010],["PMFTC Inc.","GOCCC","ANA ALLIE MOJE RETUYAN","Ed","UNIT 3","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0498277",2769340,1674340,182500],["NEW STAR INC","GOCCC","RANDY DOMINGO","Lui","NGMA 2","CLUSTER 1","Nego (with Proposal)","OPP0489077",2657250,1529250,188000],["AC MOBILITY","GOCCC","Fordson Co","Lui","UNIT 1","KEY ACCOUNTS 1","Hold","OPP0446761",2620190,1177230,180370],["HOTEL CONCEPTS, INC.","UCCaaS","Marilyn Inoc","Ed","SL 5","CLUSTER 2","Nego (with Proposal)","OPP0442520",2533020,1310580,203740],["BJ Mercantile","UCCaaS","RICHARD DEL PILAR","Andy","NGMA 4","CLUSTER 1","Parked","OPP0476897",2297770,1389220,181710],["TFS (ADDITIONAL LIC)","GOCCC","JOANNA FAYE ACU\u00d1A","Lui","UNIT 7","KEY ACCOUNTS 2","Nego (with Proposal)","OPP0434579",2271000,757000,189250],["Marine Benefits Inc","GOCCC","MARK RICAFRENTE","Ed","CGMA 3","CLUSTER 3","Win","OPP0442177",2256460,1486460,154000],["iCARE (SG REQT)","GOCCC","MELISSA ANN LOPEZ","Lui","UNIT 7","KEY ACCOUNTS 2","Nego (with Proposal)","OPP0436498",2240520,2063970,29425],["PhilCare","GOCCC","PAOLO ANGELO EBORA","Andy","UNIT 3","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0496274",2182040,609040,143000],["New Star Call Center","GOCCC","RANDY DOMINGO","Andy","NGMA 2","CLUSTER 1","","OPP0495026",2153510,580510,143000],["Council for the Welfare of Children","GOCCC","LEO MAR DELOS SANTOS","Andy","NGMA 4","CLUSTER 1","","OPP0491913",2140510,142000,142000],["HHospitality","UCCaaS","AARON PAUL ABRENICA","Ed","SGMA 1","CLUSTER 3","Nego (with Proposal)","SFA to follow",2140350,1491270,108180],["UNILAB (CCS)","GOCCC","ANNA ARIZZA BORROMEO","Lui","UNIT 4","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0484792",2124470,562470,142000],["NATIONAL TELECOMMUNICATIONS COMMISSION","GOCCC","ANGELO TICMAN","Lui","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Nego (with Proposal)","To Follow (Project Lift)",2124470,1130470,142000],["LaLaMove Phils. Inc","GOCCC","FRANCISCO MENDROS","Andy","SGMA 1","CLUSTER 3","Nego (with Proposal)","OPP0479295",2121640,1258840,143800],["Sumisho Motor Finance Corporation","GOCCC","JOANNA FAYE ACU\u00d1A","Andy","UNIT 7","KEY ACCOUNTS 2","Nego (with Proposal)","OPP0481181",2087020,143000,143000],["PhilWeb Corporation","GOCCC","RANDY DOMINGO","Andy","NGMA 2","CLUSTER 1","Nego (with Proposal)","OPP0489665",2060250,143000,143000],["MONEYCAT","GOCCC","RANDY DOMINGO","Lui","NGMA 2","CLUSTER 1","","OPP0473318",2053530,537730,137800],["GLOBAL PLAYHUB","GOCCC","PAUL WILNER BOBIS","Lui","CGMA 4","CLUSTER 3","Lost","OPP0476318",2034490,1502890,132900],["ORIX","UCCaaS","Vincent Manalad","Lui","UNIT 5","KEY ACCOUNTS 2","Win","OPP0404753",1944310,1478770,155180],["LARGE HUB","GOCCC","MECAELLA DIALA","Lui","CGMA 1","CLUSTER 2","Lost","OPP0451351",1929400,1798600,130800],["AECC-CCS","GOCCC","MARK ANGELO LAGUBANA","Lui","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0478189",1929250,998250,133000],["CITU","UCCaaS","FINZY REIKA SACAY","Marj","VIS 3","CLUSTER 4","Nego (with Proposal)","OPP0475766",1846140,137470,137470],["GREEN AND SMART MOBILITY (Davao)","UCCaaS","NORBERTO DUNGCA III","Lui","CGMA 2","CLUSTER 2","Hold","OPP0407550",1840130,695730,143050],["Metro Sanitas Corporation","GOCCC","JOHARA GARCIA SIY","Andy","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0486262",1786300,106000,106000],["E-teleconnect","UCCaaS","JENNY SAMALA","Ed","OMNI","OMNI","Nego (with Proposal)","OPP0441415 / OPP0472300",1758386,1009586,124800],["RMMI","UCCaaS","PAOLO ANGELO EBORA","Lui","UNIT 3","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0487448",1723030,921490,133590],["PBCOM","GOCCC","JUAN MIGUEL PACQUIAO VILLANUEVA","Lui","UNIT 4","KEY ACCOUNTS 1","Lost","OPP0437343",1716377,1455377,130500],["Merlo Agri Vet","UCCaaS","JULIUS CUENCA","Ed","SL 5","CLUSTER 2","Lost","OPP0464230",1712200,1325410,128930],["OAMPI Inc. Open Access","GOCCC","JONATHAN GUERRERO","Andy","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0478989",1700830,468830,112000],["Cebu Institute of Technology","UCCaaS","FINZY REIKA SACAY","Ed","VIS 3","CLUSTER 4","Hold","OPP0404862",1699830,1699830,0],["DEPED","GOCCC","NIKO CAJA ESTACIO","Lui","NGA 1","NATIONAL GOVERNMENT ACCOUNTS","Nego (with Proposal)","OPP0487192",1647690,959850,114640],["DTI (3rd)","UCCaaS","JOEL ANGELO ESPIRITU","Ed","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Win","OPP0436061",1605225,936381,133768],["NEGROS ELECTRIC AND POWER CORP","GOCCC","KIM ANTHONY BAJENTING","Ed","VIS 2","CLUSTER 4","Win","OPP0458725",1394270,1076690,105860],["ZODIAC HOSPITAL (Additional Licenses)","UCCaaS","RINA MENDOZA","Lui","UNIT 1","KEY ACCOUNTS 1","Win","OPP0305392",1359710,1256740,102970],["METROBANK","GOCCC","MITCHEL ARQUERO","Lui","UNIT 7","KEY ACCOUNTS 2","","OPP0476965",1293480,838080,75900],["Manila Central University","UCCaaS","CHRISTIAN SANTOS","Andy","NGMA 4","CLUSTER 1","Nego (with Proposal)","OPP0490893",1278550,97450,97450],["Alpha Insurance","UCCaaS","ANDREW BESINAL","Ed","CGMA 1","CLUSTER 2","Nego (with Proposal)","OPP0468629",1271040,748050,105920],["EY GDS","UCCaaS","DENNIS DIMALIBOT TOLENTINO","Ed","CGMA 5","CLUSTER 3","","OPP0495343",1255000,662500,98750],["HITACHI ELEVATOR","UCCaaS","JOHN ALFRED XAVIER CRUZ TAN","Lui","CGMA 3","CLUSTER 3","Nego (with Proposal)","OPP0490496",1136050,607750,88050],["ATENEO DE NAGA","UCCaaS","Carlo Balonzo","Lui","SL 4","CLUSTER 2","Win","OPP0407959",1109350,868240,80370],["GOTYME ADDITIONAL DIALER","GOCCC","MELISSA ANN LOPEZ","Lui","UNIT 7","KEY ACCOUNTS 2","Win","OPP0466425",1067270,865070,67400],["GOTYME (MIGRATION)","GOCCC","MELISSA ANN LOPEZ","Lui","UNIT 7","KEY ACCOUNTS 2","Win","OPP0366204",1045800,1045800,0],["Sunlight Guest Hotel Inc.","UCCaaS","Richard Isagre","Andy","SGMA 1","CLUSTER 3","Hold","OPP0412747",939650,378530,70140],["MORE ELECTRIC AND POWER CORP","GOCCC","KIM ANTHONY BAJENTING","Ed","VIS 2","CLUSTER 4","Win","OPP0458723",939110,735320,67930],["GREEN AND SMART MOBILITY (Baguio)","UCCaaS","NORBERTO DUNGCA III","Lui","CGMA 2","CLUSTER 2","Hold","OPP0407552",859430,359830,62450],["PETNET","UCCaaS","KRISTELLE RAE VILLAMOR","Lui","UNIT 2","KEY ACCOUNTS 1","Hold","OPP0442470",855960,713300,71330],["OceanaGold Didipio","UCCaaS","JONATHAN GUERRERO","Ed","CGMA 4","CLUSTER 3","Lost","OPP0484015",846220,535170,62210],["LATTICE SEMICONDUCTOR (PH)","UCCaaS","ARNOLD BACALLA","Lui","SGMA 2","CLUSTER 3","Nego (with Proposal)","OPP0477846",836810,515210,64320],["High Point Services Network","UCCaaS","Jenny Samala","Andy","OMNI","OMNI","Hold","OPP0440144",821760,108280,68480],["BOUYGUES TRAVAUX PUBLICS","UCCaaS","Arnell Onayan","Lui","SGMA 1","CLUSTER 3","Lost","OPP0425052",817130,703530,56800],["Agusan Del Norte Electric Cooperative","UCCaaS","Alexis Aguelo","Ed","MIN 1","CLUSTER 4","Win","OPP0339691",801370,801370,59540],["Davao De Oro State College","UCCaaS","ANA ROSEL DENOGA","Andy","OMNI","OMNI","Hold","OPP0401707",773200,607780,55140],["CITADEL PACIFIC LTD","UCCaaS","ERILAND RUIZ OSIO","Ed","UNIT 3","KEY ACCOUNTS 1","Hold","OPP0427920",739040,535190,40770],["ATENEO DE NAGA UNIVERSITY","UCCaaS","CARLO BALONZO","Ed","SL 4","CLUSTER 2","Win","OPP0448325",731540,582260,49760],["ZAMA","UCCaaS","MARILYN INOC","Ed","SL 5","CLUSTER 2","Nego (with Proposal)","OPP0488679",688270,390190,49680],["Panasiatic","UCCaaS","JOHN RAY GEOPANO","Ed","VIS 2","CLUSTER 4","Nego (with Proposal)","OPP0392518",672740,392300,46740],["J Fiber Internet Services Corporation","UCCaaS","John Paul Martin Borromeo","Andy","OMNI","OMNI","Nego (with Proposal)","OPP0431909",662730,422230,48100],["C & E PUBLISHING, INC.","UCCaaS","MIGUEL ANTONIO LUIS GAW LAZARO","Ed","NGMA 3","CLUSTER 1","Hold","OPP0352819",638770,238210,34030],["ISLA PETROLEUM & GAS CORP","UCCaaS","ERILAND RUIZ OSIO","Ed","UNIT 3","KEY ACCOUNTS 1","Hold","OPP0429317",621800,466800,31000],["RLC","UCCaaS","MELISSA ANN LOPEZ","Lui","UNIT 7","KEY ACCOUNTS 2","","OPP0477438",609000,388750,44050],["GREEN AND SMART MOBILITY (CLOUD SIP)","UCCaaS","NORBERTO DUNGCA III","Lui","CGMA 2","CLUSTER 2","Cancelled","OPP0481091",601000,424000,44250],["BOSCH","UCCaaS","JORDAN PAUL IGNACIO","Lui","CGMA 5","CLUSTER 3","Nego (with Proposal)","OPP0479839",601000,335500,44250],["PANASIATIC CALL CENTER, INC.","UCCaaS","RUBEN ABREGANA","Marj","VIS 2","CLUSTER 4","Nego (with Proposal)","OPP0392518",598180,147070,41010],["ESQUIRE","UCCaaS","Mayvel Alocilja","Lui","CGMA 5","CLUSTER 3","Nego (with Proposal)","OPP0462232",574920,335370,47910],["AB LEISURE EXPONENT - Digiplus","UCCaaS","JUVY ROSE GOMEZ","Ed","CGMA 6","CLUSTER 3","Nego (with Proposal)","OPP0469818",574000,322000,42000],["GLOBAL PAYMENTS","UCCaaS","CAMILLE ELORIAGA","Lui","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0469665",563250,240450,40350],["BOHOL LiGHT COMPANY ELECTRIC","GOCCC","KIM ANTHONY BAJENTING","Ed","VIS 2","CLUSTER 4","Win","OPP0458755",558350,449750,36200],["Maharlika Investment Corporation","UCCaaS","KATREZE CHARMAYN TAEZA","Andy","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Win","OPP0387511",556864,381864,35000],["Philippine Science High School","UCCaaS","ALEXIS AGUELO","Marj","MIN 1","CLUSTER 4","Nego (with Proposal)","OPP0444358",535714,0,0],["LGU El Nido","UCCaaS","AARON PAUL ABRENICA","Ed","SGMA 1","CLUSTER 3","Nego (with Proposal)","OPP0475933",529300,380740,24760],["Actimed Inc. / Generika","UCCaaS","HANNAH CEPE","Andy","UNIT 1","KEY ACCOUNTS 1","Nego (with Proposal)","OPP0430246",498660,353910,28950],["REMITLY PHL OPERATIONS INC.","UCCaaS","MAYVEL ALOCILJA","Ed","CGMA 5","CLUSTER 3","Win","OPP0441415",480900,448760,16070],["GREEN AND SMART MOBILITY (Basic Phone)","UCCaaS","NORBERTO DUNGCA III","Lui","CGMA 2","CLUSTER 2","Hold","OPP0422355",475560,158520,39630],["Sansyu Precision Lipa Inc.","UCCaaS","MARILYN INOC","Ed","SL 5","CLUSTER 2","Nego (with Proposal)","OPP0470011",466950,304590,27060],["CALL CENTER STUDIO","UCCaaS","JOHN ROBERT ANGELES","Lui","Hyperscalers","Hyperscalers","Cancelled","OPP0468710",462600,346950,38550],["Exclusive Cars International Holdings","UCCaaS","Frechie Antony Macaraeg","Andy","OMNI","OMNI","Hold","OPP0410321",456880,75290,34690],["MEGAXCESS","UCCaaS","GLENN MALALUAN","Lui","NGMA 2","CLUSTER 1","Nego (with Proposal)","OPP0479096",451390,269470,30320],["BYD Phillipines Corp.","UCCaaS","HANNAH CEPE","Ed","UNIT 1","KEY ACCOUNTS 1","Win","",434000,370000,32000],["BSU Alangilan","UCCaaS","ROSCELLE ANNE LUMANGLAS","Ed","SL 5","CLUSTER 2","Nego (with Proposal)","OPP0446674",428000,428000,0],["STANDARD UNITS SUPPLY PHILIPPINES","UCCaaS","JEFFREY SONTOSIODAD PINEDA","Ed","SL 5","CLUSTER 2","Hold","OPP0397115",397610,269760,25570],["Mybrush Technologies","UCCaaS","Marilyn Inoc","Ed","SL 5","CLUSTER 2","Nego (with Proposal)","OPP0463804",392810,265970,21140],["Advance foods","UCCaaS","DOMINICO QUINTO JR.","Ed","NGMA 1","CLUSTER 1","Nego (with Proposal)","OPP0487487",354640,220420,22370],["JFIBER","UCCaaS","JOHN PAUL MARTIN BORROMEO","Lui","OMNI","OMNI","Nego (with Proposal)","OPP0431909",349660,213880,22630],["UNI-SHIP / SINOTRANS","UCCaaS","RANDY DOMINGO","Ed","NGMA 2","CLUSTER 1","Win","OPP0380064",300410,280020,20390],["INDIANA AEROSPACE UNIVERSITY","UCCaaS","JOAN MARIE NEMENZO","Marj","VIS 1","CLUSTER 4","Win","OPP0465598",299400,24950,24950],["Jose Maria College","UCCaaS","MAYBY - LYNN TARROJA","Marj","MIN 1","CLUSTER 4","Nego (with Proposal)","OPP0465457",292230,16800,16800],["Ingenico","UCCaaS","DENALYN NITOLLANO","Ed","CGMA 3","CLUSTER 3","Nego (with Proposal)","OPP0475710",285450,199450,17200],["CONSISTENT FROZEN SOLUTIONS","UCCaaS","ANNALIZA GONZALES AQUINO","Ed","CGMA 3","CLUSTER 3","Hold","OPP0390898",282860,198110,16950],["MONEYCAT","UCCaaS","RANDY DOMINGO","Lui","NGMA 2","CLUSTER 1","","OPP0473317",272200,114350,14350],["Aetos","UCCaaS","ANA ROSEL DENOGA","Ed","OMNI","OMNI","Hold","OPP0468761",249560,178810,14150],["ZureRx Corp","UCCaaS","RICHARD DEL PILAR","Andy","NGMA 4","CLUSTER 1","Nego (with Proposal)","OPP0465153",239440,173590,13170],["Access Frontier Technologies","UCCaaS","MARK ANGELO LAGUBANA","Ed","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0488218",238600,159700,13150],["FAME RESIDENCES CONDO CORP","UCCaaS","LANCE VICTOR CAGULADA VERGARA","Lui","UNIT 5","KEY ACCOUNTS 2","Nego (with Proposal)","OPP0460205",208930,112030,16150],["VIENOVO","UCCaaS","JOHARA GARCIA SIY","Lui","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0489406",181080,110130,14190],["Davao City Health Office","UCCaaS","HONEY GRACE DE LA CRUZ","Marj","MIN 1","CLUSTER 4","Nego (with Proposal)","OPP0467015",164730,10300,10300],["Flarego Technologies Corp.","UCCaaS","NOEL LUPANEZA","Ed","VIS 1","CLUSTER 4","Win","OPP0465717",164330,143730,10300],["Flarego Technologies","UCCaaS","NOEL LUPANEZA","Marj","VIS 1","CLUSTER 4","Win","OPP0444358",164330,10300,10300],["RESPICIO & CO. LAW FIRM","UCCaaS","ANA ROSEL DENOGA","Ed","OMNI","OMNI","Hold","OPP0476162",148910,102910,9200],["Meta Capital Inc.","UCCaaS","Ana Rosel Denoga","Andy","OMNI","OMNI","Hold","OPP0430758",146040,91630,12170],["TOYOTA CAMARINES SUR, INC.","UCCaaS","Carlo Balonzo","Ed","SL 4","CLUSTER 2","Nego (with Proposal)","OPP0463460",146000,122000,8000],["Zhipan Management Inc.","UCCaaS","ANA ROSEL DENOGA","Andy","OMNI","OMNI","Hold","OPP0440140",126300,102090,8070],["FDA, Philippines","UCCaaS","MARY JOY DESCALZOTA BRUSAS","Andy","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Parked","",119030,90230,7200],["PXT LENDING INVESTORS INC.","UCCaaS","Ryan Ramirez","Andy","OMNI","OMNI","Hold","OPP0405901",105080,35450,6330],["CTFJ","UCCaaS","SHARMAINE FERNANDEZ","Ed","SGMA 1","CLUSTER 3","Parked","",0,0,0],["Wealth Development bank","UCCaaS","JHOANA MAE MANAHAN","Ed","VIS 3","CLUSTER 4","No Go","",0,0,0],["Medgrocer","GOCCC","FREDERICK RIBAYA","Ed","CGMA 3","CLUSTER 3","","",0,0,0],["Suysing","UCCaaS","GERALD JAMES GARCIA","Ed","SL 1","CLUSTER 2","Parked","",0,0,0],["CCEAP","GOCCC","EMAN SARDOUK","Ed","UNIT 2","KEY ACCOUNTS 1","","",0,0,0],["SPSI","UCCaaS","APRIL SAN PEDRO","Ed","NGMA 4","CLUSTER 1","Parked","",0,0,0],["PNB Holdings","UCCaaS","PAOLO ANGELO EBORA","Ed","UNIT 3","KEY ACCOUNTS 1","","",0,0,0],["NASAT LABS","UCCaaS","CARMELITA MACATLANG","Ed","SGMA 2","CLUSTER 3","","",0,0,0],["Medicard","SBCaaS","ROTESSA ATENDIDO","Ed","UNIT 1","KEY ACCOUNTS 1","","",0,0,0],["Eclaro Business Solution","UCCaaS","APRIL SAN PEDRO","Ed","NGMA 4","CLUSTER 1","","",0,0,0],["Philplans","UCCaaS","PAOLO ANGELO EBORA","Ed","UNIT 3","KEY ACCOUNTS 1","","",0,0,0],["Artur john collection agency","UCCaaS","MARIA GLISELDA CAPACILLO","Ed","CGMA 1","CLUSTER 2","","",0,0,0],["IGO Digital High Technology Inc.","UCCaaS","KATRINA FIGUEROA","Ed","NCL 1","CLUSTER 1","","",0,0,0],["Drakester","UCCaaS","SAMUEL SERAFIN ROXAS","Ed","NGMA 4","CLUSTER 1","","",0,0,0],["Mary Grace","UCCaaS","SHARMAINE FERNANDEZ","Ed","SGMA 1","CLUSTER 3","","",0,0,0],["SBT Philippines","UCCaaS","APOLONARIO PAGAMPAN","Ed","NGMA 1","CLUSTER 1","No Go","",0,0,0],["COPPERSTONE","UCCaaS","JEREMY JONES FERNANDEZ","Lui","CGMA 4","CLUSTER 3","Nego (with Proposal)","OPP0481003",0,0,0],["FORTUNE LIFE INSURANCE","GOCCC","JONATHAN GUERRERO","Lui","CGMA 4","CLUSTER 3","Cancelled","",0,0,0],["VELOX","UCCaaS","JENNIFER SANTOS","Lui","Hyperscalers","Hyperscalers","","",0,0,0],["SLEF","GOCCC","GABRIEL JULIO SIQUIJOR SANTOS","Lui","NGMA 3","CLUSTER 1","Nego (with Proposal)","OPP0489256",0,0,0],["ACEN","GOCCC","RINA MENDOZA","Lui","UNIT 1","KEY ACCOUNTS 1","","",0,0,0],["MEGAWORLD","GOCCC","ANA KARLYN DELA CRUZ","Lui","UNIT 4","KEY ACCOUNTS 1","","",0,0,0],["Quality Appliance Plaza","UCCaaS","EDISON RUBI JR.","Marj","MIN 2","CLUSTER 4","","",0,0,0],["CLEARTOUCH","UCCaaS","MA. KRISTINA DOMINGUEZ","Lui","CGMA 3","CLUSTER 3","","",0,0,0],["UNILAB (UCCaaS)","UCCaaS","ANNA ARIZZA BORROMEO","Lui","UNIT 4","KEY ACCOUNTS 1","","",0,0,0],["EON","UCCaaS","JENNY SAMALA","Lui","OMNI","OMNI","","",0,0,0],["YAMAHA","GOCCC","JULIUS CUENCA","Lui","SL 5","CLUSTER 2","","",0,0,0],["NISSIN PRECISION","GOCCC","JULIUS CUENCA","Lui","SL 5","CLUSTER 2","","",0,0,0],["GREEN AND SMART MOBILITY (Baguio 2)","UCCaaS","NORBERTO DUNGCA III","Lui","CGMA 2","CLUSTER 2","Nego (with Proposal)","OPP0491795",0,0,0],["HANN PHIL","GOCCC","KATRINA FIGUEROA","Lui","NCL 1","CLUSTER 1","Nego (with Proposal)","OPP0490729",0,0,0],["DOLE","GOCCC","ROLLANE ARTHUR MOLLASGO CORDOVA","Lui","NGA 1","NATIONAL GOVERNMENT ACCOUNTS","No Go","OPP0484912",0,0,0],["AECC-GENESYS","GOCCC","MARK ANGELO LAGUBANA","Lui","CGMA 4","CLUSTER 3","","OPP0478184",0,0,0],["Mellinium Cash Finance Corp","GOCCC","CEDRIC ILAGAN","Marj","VIS 3","CLUSTER 4","","",0,0,0],["PDDRMO Negros Oriental","UCCaaS","ANNE FENY VELOSO","Marj","VIS 2","CLUSTER 4","","",0,0,0],["Samal Shore","UCCaaS","ELVIN JOHN CALLA","Marj","MIN 1","CLUSTER 4","","",0,0,0],["CDRRMO El Salvador City","UCCaaS","ALEXIS ADRIENE DEL PUERTO","Marj","MIN 2","CLUSTER 4","","",0,0,0],["DOH - CHD REGION XI","UCCaaS","ALEXIS AGUELO","Marj","MIN 1","CLUSTER 4","","OPP046443",0,0,0],["Flatworld Solutions","GOCCC","JAY RAQUEL","Marj","MIN 1","CLUSTER 4","","",0,0,0],["Eagle VIsion","UCCaaS","Mark Laurience Pangan","Andy","GSP 1","GSP 1","Parked","OPP0431556",0,0,0],["Adventist Medical Center College","UCCaaS","JIM LUBGUBAN","Marj","MIN 2","CLUSTER 4","","",0,0,0],["Siliman University","UCCaaS","MARK GAMON","Marj","VIS 2","CLUSTER 4","","",0,0,0],["Cebu City Government","UCCaaS","JOY ANN CEPE","Marj","VIS 3","CLUSTER 4","","",0,0,0],["GrandCars","UCCaaS","KIM ANTHONY BAJENTING","Marj","VIS 2","CLUSTER 4","","",0,0,0],["Saint Vincent de Paul","UCCaaS","ENNAR JUSSEF LICAYAN","Marj","MIN 2","CLUSTER 4","","",0,0,0],["LGU Butuan City","UCCaaS","ENNAR JUSSEF LICAYAN","Marj","MIN 2","CLUSTER 4","","",0,0,0],["FICCO","UCCaaS","EDISON RUBI JR.","Marj","MIN 2","CLUSTER 4","","OPP0486803",0,0,0],["SUMIFRU","UCCaaS","MAYBY - LYNN TARROJA","Marj","MIN 1","CLUSTER 4","","",0,0,0],["MASS-SPECC Cooperative","UCCaaS","EDISON RUBI JR.","Marj","MIN 2","CLUSTER 4","","OPP0486805",0,0,0],["Gothong Southern Shipping Lines","UCCaaS","CEDRIC ILAGAN","Marj","VIS 3","CLUSTER 4","","",0,0,0],["DUMAGUETE CATHEDRAL CREDIT COOPERATIVE","UCCaaS","MARK GAMON","Marj","VIS 2","CLUSTER 4","","",0,0,0],["LifeBank Rural Bank","UCCaaS","KIM ANTHONY BAJENTING","Marj","VIS 2","CLUSTER 4","","",0,0,0],["Philippine Science High School (Marj)","UCCaaS","ANNA LOU LOMOTAN","Marj","VIS 2","CLUSTER 4","","",0,0,0],["Juanito King and Sons Inc","GOCCC","FINZY REIKA SACAY","Marj","VIS 3","CLUSTER 4","","",0,0,0],["Arthur John Collection","UCCaaS","MARIA GLISELDA CAPACILLO","Andy","CGMA 1","CLUSTER 2","Parked","",0,0,0],["Palawan Group of Companies","UCCaaS","GUILLER ROQUE","Andy","CGMA 4","CLUSTER 3","No Go","",0,0,0],["Verto Network Solutions Inc.","UCCaaS","GLENN MALALUAN","Andy","NGMA 2","CLUSTER 1","Parked","OPP0486102",0,0,0],["Advance Ability Assistance Training Center","UCCaaS","LAURO LUCAS","Andy","SL 1","CLUSTER 2","","",0,0,0],["Autokid Subic Trading Corporation","GOCCC","RANDY DE LOS REYES","Andy","NCL 1","CLUSTER 1","Parked","OPP0483963",0,0,0],["GICF","UCCaaS","RANDY DOMINGO","Andy","NGMA 2","CLUSTER 1","No Go","",0,0,0],["MBA Consulting Philippines Inc.","GOCCC","MARK GIBSON TERMULO","Andy","NGMA 3","CLUSTER 1","","OPP0489731",0,0,0],["Flexo Manufacturing Corporation","UCCaaS","RICHARD DEL PILAR","Andy","NGMA 4","CLUSTER 1","","",0,0,0],["BSP","GOCCC","GEMMA PEREZ","Andy","NGA 1","NATIONAL GOVERNMENT ACCOUNTS","","",0,0,0],["Anapolis Finance","UCCaaS","AARON MARK CASTILLO","Andy","OMNI","OMNI","No Go","",0,0,0],["Cordlife","UCCaaS","MANUELITO FLORES","Andy","NGMA 3","CLUSTER 1","","OPP0491561",0,0,0],["Clio Tech Plastic Inc.","UCCaaS","RICHARD DEL PILAR","Andy","NGMA 4","CLUSTER 1","","",0,0,0],["Providers Multi-Purpose Cooperative","UCCaaS","ARMANDO JUDAEO FUENTES","Andy","NCL 2","CLUSTER 1","","",0,0,0],["Alternatives Food Corp","UCCaaS","KLARIZ DEAH MINDANAO","Andy","NGMA 2","CLUSTER 1","","",0,0,0],["EXL Service Philippines Inc","GOCCC","MIGNON LIM","Andy","CGMA 1","CLUSTER 2","","OPP0496523",0,0,0],["Cathay Drug","UCCaaS","JOHARA GARCIA SIY","Andy","CGMA 4","CLUSTER 3","","",0,0,0],["Light Rail Manila Corporation","UCCaaS","NICOLE PIJENN BALBUENA CHING","Andy","UNIT 7","KEY ACCOUNTS 2","","",0,0,0]];
+
+const PR=[["\u0047otyme_GenesysRenewal2_Jan6","GOCCC","MELISSA ANN LOPEZ","UNIT 7","KEY ACCOUNTS 2","Lui","OPP0459665","",6658680,449610],["BANK OF THE PHIL. ISLANDS","GOCCC","DAVID ROY DE LOS REYES","UNIT 1","KEY ACCOUNTS 1","Lui","OPP0464378","",3966132,330511],["Hexaware","GOCCC","JEANETTE PATAGOC","CGMA 5","CLUSTER 3","Lui","OPP0467119","",3374040,281170],["HOTEL CONCEPTS, INC.","UCCaaS","MARILYN INOC","SL 5","CLUSTER 2","Edison","OPP0459414","",2533020,203740],["CIBI","GOCCC","PAUL WILNER BOBIS","CGMA 4","CLUSTER 3","Unassigned","OPP0472134","",2501350,168000],["BATELEC","GOCCC","MARILYN INOC","SL 5","CLUSTER 2","Lui","OPP0428508","",1379500,90000],["UNITED BEARING INDUSTRIAL CORP.","UCCaaS","EMERSON MAMERTO DOMINGO","NCL 2","CLUSTER 1","Unassigned","OPP0465453","",1046100,79800],["Health Partners Dental Access","UCCaaS","JOSE MARI AGUILAR","NGMA 4","CLUSTER 1","Unassigned","OPP0462642","",927420,65700],["LGU of Taguig","UCCaaS","MARK RICAFRENTE","CGMA 3","CLUSTER 3","Unassigned","OPP0346508","",923880,76990],["ALLDIGI TECH MANILA, INC.","UCCaaS","JEANETTE PATAGOC","CGMA 5","CLUSTER 3","Edison","OPP0465063","",912030,69100],["ST. MATTHIAS MEDICAL CENTER","UCCaaS","ARMANDO JUDAEO FUENTES","NCL 2","CLUSTER 1","Unassigned","OPP0462272","",861950,60950],["THE LEGACY TRUCKS AND TRACTORS INC.","UCCaaS","EUGENE MARTIN MENDOZA","OMNI","OMNI","Unassigned","OPP0460244","",669440,49030],["INSTITUTE FOR CONSECRATED LIFE","UCCaaS","FRECHIE ANTONY MACARAEG","OMNI","OMNI","Unassigned","OPP0470098","",650860,51840],["MINDWELL PHILIPPINES, INC.","UCCaaS","ANA ROSEL DENOGA","OMNI","OMNI","Unassigned","OPP0464011","",481930,33350],["FDA, PHILIPPINES","UCCaaS","MARY JOY DESCALZOTA BRUSAS","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Andy","for budgetary","",469620,31000],["BYD PHILIPPINES CORP.","UCCaaS","HANNAH CEPE","UNIT 1","KEY ACCOUNTS 1","Edison","To Follow","",456150,31200],["ZOOLOGICAL SOCIETY OF LONDON","UCCaaS","FRECHIE ANTONY MACARAEG","OMNI","OMNI","Unassigned","OPP0469605","",441830,30110],["SAMSUNG C&T PHILIPPINES, CORP.","UCCaaS","JENNY SAMALA","OMNI","OMNI","Unassigned","OPP0460894","",430090,28240],["BCTECH HQ COMPANY","UCCaaS","FREAH JOY CENTENO","NGMA 1","CLUSTER 1","Unassigned","OPP0472436","",410060,31330],["ACTIMED, INC.","UCCaaS","HANNAH CEPE","UNIT 1","KEY ACCOUNTS 1","Unassigned","OPP0466768","",380300,27800],["WORLDWIDE R SOLUTIONS PHILIPPINES","UCCaaS","JENNY SAMALA","OMNI","OMNI","Unassigned","OPP0461831","WIN",376210,24600],["DPWH","UCCaaS","NIKO CAJA ESTACIO","NGA 1","NATIONAL GOVERNMENT ACCOUNTS","Unassigned","to follow - budgetary only","",370510,22930],["AUCTANE PHILIPPINES INC","UCCaaS","JENNY SAMALA","OMNI","OMNI","Unassigned","OPP0458279","",362730,23100],["MEDETHIX INC.","UCCaaS","KLARIZ DEAH MINDANAO","NGMA 2","CLUSTER 1","Unassigned","OPP0466922","",354840,22420],["GOCCC Gotyme_Cloud_CX1 and CX3","GOCCC","MELISSA ANN LOPEZ","UNIT 7","KEY ACCOUNTS 2","Unassigned","OPPxxxxx","",298800,24900],["SUMISETSU PHILS INC.","UCCaaS","JONATHAN GUERRERO","CGMA 4","CLUSTER 3","Unassigned","OPP0466767","",206990,13150],["GREEN AND SMART MOBILITY PHILS","UCCaaS","NORBERTO DUNGCA III","CGMA 2","CLUSTER 2","Unassigned","OPP0471590","",203180,0],["Health Partners Dental Access (2)","UCCaaS","JOSE MARI AGUILAR","NGMA 4","CLUSTER 1","Unassigned","OPP0468730","",200570,15850],["BIOMERIEUX PHILIPPINES CORP.","UCCaaS","ALFONSO PAREDES","CGMA 5","CLUSTER 3","Unassigned","OPP0463886","",178000,9000],["H.B. FULLER (PHILIPPINES), INC.","UCCaaS","IAN MOSES TENORIO","SL 2","CLUSTER 2","Unassigned","OPP0467652","",147520,8960],["Prime Infra / ACF Routing","UCCaaS","JOHANNA MIKAELA DELA CRUZ","UNIT 7","KEY ACCOUNTS 2","Unassigned","OPP0453615","",76530,3900],["ASUS PHILIPPINES CORPORATION","UCCaaS","GLENN MALALUAN","NGMA 2","CLUSTER 1","Unassigned","OPP0468111","",0,0],["MEDETHIX INC. (2)","UCCaaS","KLARIZ DEAH MINDANAO","NGMA 2","CLUSTER 1","Unassigned","OPP0432675","",0,0],["SUNNY & SCRAMBLE EGG DEALER","UCCaaS","ALYSSA PERA","NGMA 1","CLUSTER 1","Unassigned","OPP0472104","",0,0],["IPOPHL","UCCaaS","JOEL ANGELO ESPIRITU","NGA 2","NATIONAL GOVERNMENT ACCOUNTS","Edison","to follow","",0,0],["TRANSPORTIFY INC.","UCCaaS","ALYSSA PERA","NGMA 1","CLUSTER 1","Unassigned","OPP0473286","",0,0],["Hive Health","UCCaaS","FRECHIE ANTONY MACARAEG","OMNI","OMNI","Unassigned","OPP0472057","",0,0],["JT INTERNATIONAL (PHILIPPINES)","UCCaaS","TRACY LANA","CGMA 6","CLUSTER 3","Unassigned","OPP0464930","",0,0],["VIDAXL SERVICES (PH) INC","UCCaaS","FRECHIE ANTONY MACARAEG","OMNI","OMNI","Unassigned","OPP0472767","",0,0],["RVLV PI Limited, Inc.","UCCaaS","ANA ROSEL DENOGA","OMNI","OMNI","Unassigned","To Follow","",0,0],["ADVANCE FOOD CONCEPTS MFG.","UCCaaS","DOMINICO QUINTO JR.","NGMA 1","CLUSTER 1","Edison","OPP0413938","",0,0],["RVLV PI Limited, Inc. (2)","UCCaaS","JENNY SAMALA","OMNI","OMNI","Unassigned","OPP0474146","",0,0],["SUNPOWER PHILIPPINES LTD.","UCCaaS","LIZETH MARI GARCIA","SL 1","CLUSTER 2","Unassigned","OPP0474079","",0,0],["Boy Scout of Philippines - Manila","UCCaaS","JENNY SAMALA","OMNI","OMNI","Unassigned","OPP0475002","",0,0],["GOCCC Gotyme_VoC Survey","GOCCC","MELISSA ANN LOPEZ","UNIT 7","KEY ACCOUNTS 2","Unassigned","OPPxxxx budgetary","",0,0],["AGUSAN DEL NORTE ELECTRIC COOP","UCCaaS","ENNAR JUSSEF LICAYAN","MIN 2","CLUSTER 4","Edison","OPP0475609","",0,0],["Capital Shipmanning Philippines","UCCaaS","JONATHAN DEXTER BARRIENTOS","CGMA 1","CLUSTER 2","Unassigned","OPP0475812","",0,0],["AYALALAND MALLS, INC.","UCCaaS","BERNARD PERILLO","UNIT 1","KEY ACCOUNTS 1","Unassigned","OPP0474957","",0,0],["BPI - GOCCC Retention","GOCCC","DAVID ROY DE LOS REYES","UNIT 1","KEY ACCOUNTS 1","Unassigned","To Follow","",0,0],["KAREILA MANAGEMENT CORP.","UCCaaS","MELISSA PUA","UNIT 6","KEY ACCOUNTS 2","Unassigned","OPP0475276","",0,0],["ADIDAS PHILIPPINES, INC.","UCCaaS","MAYVEL ALOCILJA","CGMA 5","CLUSTER 3","Unassigned","OPP0474634","",0,0],["OUR LADY OF FATIMA UNIVERSITY","UCCaaS","KAMILLE BUBAN","NGMA 4","CLUSTER 1","Unassigned","OPP0471527","",0,0],["WPP MARKETING COMMUNICATIONS","UCCaaS","JUVY ROSE GOMEZ","CGMA 6","CLUSTER 3","Unassigned","OPP0470350","",0,0],["ST. JAMES THE GREAT PARISH","UCCaaS","CARMELITA MACATLANG","SGMA 2","CLUSTER 3","Unassigned","OPP0474733","",0,0],["E-Science Corp","UCCaaS","ARNOLD BACALLA","SGMA 2","CLUSTER 3","Unassigned","OPP0476981","",0,0],["THE ORANGE COMPANY INC.","UCCaaS","JOHARA GARCIA SIY","CGMA 4","CLUSTER 3","Unassigned","OPP0473447","",0,0],["TANDUAY DISTILLERS, INC.","UCCaaS","PAOLO ANGELO EBORA","UNIT 3","KEY ACCOUNTS 1","Unassigned","OPP0469394","",0,0],["Qinghua Foods Corp.","UCCaaS","MA. GIANNA MICHAELA LIM","CGMA 1","CLUSTER 2","Unassigned","OPP0478811","",0,0],["RIGHT GOODS SOUTH OPERATIONS","UCCaaS","ROFORD JOSEPH BONDOC","NGMA 1","CLUSTER 1","Unassigned","OPP0476905","",0,0],["IBIDEN PHILIPPINES, INC.","UCCaaS","JEFFREY SONTOSIODAD PINEDA","SL 5","CLUSTER 2","Unassigned","OPP0471805","",0,0],["TFS GOCCC WIZ AI Call routing","GOCCC","JOANNA FAYE ACU\u00d1A","UNIT 7","KEY ACCOUNTS 2","Unassigned","OPP0479034","",0,0],["FIRST PHILIPPINE INDUSTRIAL PARK","UCCaaS","JASMINE MARGARET ALBERTO","UNIT 3","KEY ACCOUNTS 1","Unassigned","OPP0475284","",0,0],["New Rural Bank of San Leonardo","UCCaaS","SHEILA MARIE GALANG","NCL 2","CLUSTER 1","Unassigned","OPP0475072","",0,0],["EASYGOP MED PHILS. INC.","UCCaaS","ANA ROSEL DENOGA","OMNI","OMNI","Unassigned","OPP0480595","",0,0],["PACIFIC INTERNET NETWORK SOLUTIONS","UCCaaS","JEREMY JONES FERNANDEZ","CGMA 4","CLUSTER 3","Unassigned","OPP0478217","",0,0],["EASYGOP MED PHILS. INC. (2)","UCCaaS","ANA ROSEL DENOGA","OMNI","OMNI","Unassigned","OPP0480595","",0,0],["WORLDS FIRST WATER VENTURES","UCCaaS","JENNY SAMALA","OMNI","OMNI","Unassigned","OPP0479214","",0,0],["GENERAL MILLING CORPORATION","UCCaaS","JOHARA GARCIA SIY","CGMA 4","CLUSTER 3","Unassigned","OPP0479586","",0,0],["HONDA LOGISTICS PHILIPPINES INC.","UCCaaS","JASON TABBERRAH","UNIT 4","KEY ACCOUNTS 1","Unassigned","OPP0480237","",0,0],["CALOOCAN GAS CORPORATION","UCCaaS","RICHARD DEL PILAR","NGMA 4","CLUSTER 1","Unassigned","OPP0479290","",0,0],["GENKNIT MANUFACTURING CORP.","UCCaaS","GABRIEL JULIO SIQUIJOR SANTOS","NGMA 3","CLUSTER 1","Unassigned","OPP0478839","",0,0],["XTENDOPS PHILIPPINES, INC.","UCCaaS","KIM ANTHONY BAJENTING","VIS 2","CLUSTER 4","Unassigned","OPP0387743","",0,0],["FAMI UCCaaS ADDITIONAL LIC","UCCaaS","JOANNA FAYE ACU\u00d1A","UNIT 7","KEY ACCOUNTS 2","Unassigned","OPP0480842","",0,0],["BOSTIK PHILIPPINES, INC.","UCCaaS","MARIELLE AMBROCIO","NGMA 2","CLUSTER 1","Unassigned","OPP0473032","",0,0]];
+
+let cf='ALL',pf='ALL';
+function fC(){const q=document.getElementById('cs').value.toLowerCase();const d=CR.filter(r=>{const m=!q||r.join('|').toLowerCase().includes(q);let f=true;if(cf==='UCCaaS')f=r[1]==='UCCaaS';else if(cf==='GOCCC')f=r[1]==='GOCCC';else if(cf==='SBCaaS')f=r[1]==='SBCaaS';else if(cf==='HAS_TCV')f=r[8]>0;else if(cf!=='ALL')f=r[6]===cf;return m&&f;});document.getElementById('ctb').innerHTML=d.map((r,i)=>`<tr><td style="color:#aaa;font-size:11px">${i+1}</td><td class="ec" title="${r[0]}">${r[0]}</td><td>${pB(r[1])}</td><td>${bB(r[3])}</td><td class="ec" style="font-size:11px" title="${r[2]}">${r[2]}</td><td style="font-size:11px">${r[4]}</td><td style="font-size:11px;color:var(--t2)">${r[5]}</td><td>${sB(r[6])}</td><td style="font-size:10px;color:var(--t3)">${r[7]||'—'}</td><td class="nr">${fmt(r[8])}</td><td class="nr">${fmt(r[9])}</td><td class="nr">${fmt(r[10])}</td></tr>`).join('');document.getElementById('crc').textContent=`Showing ${d.length} records`;}
+function sC(f,b){cf=f;document.querySelectorAll('#pg-conso .fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');fC();}
+fC();
+function fP(){const q=document.getElementById('ps').value.toLowerCase();const d=PR.filter(r=>{const m=!q||r.join('|').toLowerCase().includes(q);let f=true;if(pf==='UCCaaS')f=r[1]==='UCCaaS';else if(pf==='GOCCC')f=r[1]==='GOCCC';else if(pf==='Lui')f=r[5]==='Lui';else if(pf==='Andy')f=r[5]==='Andy';else if(pf==='Edison')f=r[5]==='Edison';else if(pf==='Unassigned')f=r[5]==='Unassigned';else if(pf==='HAS_TCV')f=r[8]>0;return m&&f;});document.getElementById('ptb').innerHTML=d.map((r,i)=>`<tr><td style="color:#aaa;font-size:11px">${i+1}</td><td class="ec" title="${r[0]}">${r[0]}</td><td>${pB(r[1])}</td><td class="ec" style="font-size:11px" title="${r[2]}">${r[2]}</td><td style="font-size:11px">${r[3]}</td><td style="font-size:11px;color:var(--t2)">${r[4]}</td><td>${bB(r[5])}</td><td style="font-size:10px;color:var(--t3)">${r[6]||'—'}</td><td>${sB(r[7])}</td><td class="nr">${fmt(r[8])}</td><td class="nr">${fmt(r[9])}</td></tr>`).join('');document.getElementById('prc').textContent=`Showing ${d.length} records`;}
+function sP(f,b){pf=f;document.querySelectorAll('#pg-passthrough .fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');fP();}
+fP();
+</script>
+</body>
+</html>
